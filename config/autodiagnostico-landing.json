@@ -1,0 +1,121 @@
+{
+  "headerTag": "Dirigido a empresas y autónomos",
+  "heroImagen": "img/hero-autodiagnostico.jpg",
+  "kicker": "Cumplimiento normativo para empresas y autónomos",
+  "tituloNegro": "¿Tu empresa cumple con toda la normativa vigente?",
+  "tituloAzul": "Con nuestro autodiagnóstico podrás comprobarlo de forma rápida y sencilla.",
+  "subtitulo": "Descubre qué áreas de cumplimiento tenéis cubiertas, cuáles presentan riesgos, y qué necesitáis para evitar sanciones y responsabilidades legales.",
+  "bullets": [
+    {
+      "icono": "shield-check",
+      "texto": "Evita sanciones y responsabilidades"
+    },
+    {
+      "icono": "trending-up",
+      "texto": "Cumple con la normativa que aplica a tu actividad"
+    },
+    {
+      "icono": "clock",
+      "texto": "Ahorra tiempo y trabaja con tranquilidad"
+    }
+  ],
+  "ctaPrincipal": "Realizar autodiagnóstico gratuito →",
+  "trust": "El diagnóstico es 100% confidencial y sin compromiso",
+  "comoFunciona": {
+    "titulo": "¿Cómo funciona?",
+    "pasos": [
+      {
+        "icono": "file-text",
+        "titulo": "Responde",
+        "texto": "Contesta unas preguntas sencillas sobre tu actividad y tu empresa."
+      },
+      {
+        "icono": "search",
+        "titulo": "Analizamos",
+        "texto": "Evaluamos tu nivel de cumplimiento en las áreas clave que te aplican."
+      },
+      {
+        "icono": "clipboard-check",
+        "titulo": "Obtén tu resultado",
+        "texto": "Recibe al momento tu informe con el nivel de cumplimiento y lo pendiente."
+      },
+      {
+        "icono": "shield-check",
+        "titulo": "Mejora y cumple",
+        "texto": "Te proponemos qué necesitas para poneros al día con la normativa."
+      }
+    ]
+  },
+  "areasIncluidas": {
+    "titulo": "Áreas de cumplimiento incluidas",
+    "items": [
+      {
+        "icono": "lock",
+        "texto": "Protección de Datos (RGPD/LOPDGDD)"
+      },
+      {
+        "icono": "world",
+        "texto": "Adaptación LSSICE (web / comercio electrónico)"
+      },
+      {
+        "icono": "clock",
+        "texto": "Registro horario"
+      },
+      {
+        "icono": "helmet",
+        "texto": "Prevención de Riesgos Laborales"
+      },
+      {
+        "icono": "shield-check",
+        "texto": "Prevención del Acoso Sexual y por Razón de Sexo"
+      },
+      {
+        "icono": "soup",
+        "texto": "Seguridad alimentaria — si tu actividad lo requiere"
+      }
+    ]
+  },
+  "audiencia": {
+    "titulo": "¿A quién va dirigido?",
+    "items": [
+      {
+        "foto": "https://images.pexels.com/photos/5466238/pexels-photo-5466238.jpeg?auto=compress&cs=tinysrgb&w=200",
+        "titulo": "Empresas",
+        "texto": "Pymes y empresas que quieren asegurarse de cumplir con la normativa vigente."
+      },
+      {
+        "foto": "https://images.pexels.com/photos/9052775/pexels-photo-9052775.jpeg?auto=compress&cs=tinysrgb&w=200",
+        "titulo": "Autónomos y profesionales",
+        "texto": "Profesionales que quieren gestionar su actividad con seguridad y cumplir con sus obligaciones legales."
+      }
+    ]
+  },
+  "statsBar": {
+    "titulo": "Cumplimiento hoy, tranquilidad siempre",
+    "items": [
+      {
+        "icono": "shield-check",
+        "texto": "Protege tu negocio y tu reputación"
+      },
+      {
+        "icono": "ban",
+        "texto": "Evita sanciones y multas"
+      },
+      {
+        "icono": "clock",
+        "texto": "Ahorra tiempo y recursos"
+      },
+      {
+        "icono": "trending-up",
+        "texto": "Trabaja con la tranquilidad de estar al día"
+      }
+    ]
+  },
+  "ctaFinal": {
+    "titulo": "Da el primer paso hacia la tranquilidad de tu negocio",
+    "subtitulo": "Realiza ahora tu autodiagnóstico ",
+    "subtituloDestacado": "gratuito",
+    "boton": "Comenzar autodiagnóstico →",
+    "trust": "Gratuito · Sin compromiso · 100% confidencial"
+  }
+}

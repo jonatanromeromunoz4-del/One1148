@@ -1,0 +1,316 @@
+* { box-sizing: border-box; }
+    body { font-family: Arial, sans-serif; background: #eef2f6; margin: 0; padding: 0; color: #1A2733; position: relative; }
+    body::before, body::after {
+      content: ''; position: fixed; border-radius: 50%; filter: blur(70px); z-index: 0; pointer-events: none;
+    }
+    body::before { width: 420px; height: 420px; top: -140px; right: -120px; background: radial-gradient(circle, rgba(29,111,224,.14), transparent 70%); }
+    body::after { width: 380px; height: 380px; bottom: -160px; left: -130px; background: radial-gradient(circle, rgba(15,122,92,.10), transparent 70%); }
+    .progress-outer, .wrap, .aud-screen { position: relative; z-index: 1; }
+    .wrap { max-width: 640px; margin: 0 auto; padding: 20px 16px 40px; }
+    .logo-row { text-align: center; margin-bottom: 14px; }
+    .logo-row img { width: 110px; }
+    h1 { font-size: 22px; color: #173A5C; margin: 0 0 6px; text-align: center; line-height: 1.25; }
+    h2.q { font-size: 20px; color: #173A5C; margin: 0 0 6px; text-align: center; line-height: 1.3; }
+    .subtitle { font-size: 13px; color: #55647a; text-align: center; margin-bottom: 18px; line-height: 1.5; }
+    .q-sub { font-size: 12.5px; color: #8b98a8; text-align: center; margin-bottom: 22px; }
+
+    /* Barra de progreso estilo comparador — se ve arriba de todo, fija */
+    .progress-outer { position: sticky; top: 0; z-index: 5; background: #eef2f6; padding: 12px 16px 8px; }
+    .progress-inner { max-width: 640px; margin: 0 auto; }
+    .progress-top-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+    .progress-back { font-size: 12px; color: #173A5C; font-weight: bold; cursor: pointer; background: none; border: none; padding: 4px 6px; display: flex; align-items: center; gap: 4px; visibility: hidden; }
+    .progress-back.show { visibility: visible; }
+    .progress-step-lbl { font-size: 11px; color: #8b98a8; }
+    .progress-bar-bg { height: 5px; background: #dbe3ec; border-radius: 3px; overflow: hidden; }
+    .progress-bar-fill { height: 100%; background: #173A5C; border-radius: 3px; transition: width .25s ease; }
+
+    .card-panel { background: #fff; border: 1px solid #dde3ea; padding: 26px 22px; border-radius: 10px; }
+
+    /* Solo la pantalla del informe final (paso "contacto", ya con el
+       informe dentro) usa todo el ancho disponible en escritorio — el
+       resto de pasos del asistente se quedan en los 640px de siempre.
+       Se ensancha el .wrap (y la barra de progreso) directamente en vez
+       de "romper" el ancho del card-panel por su cuenta: como .wrap ya
+       estaba limitado a 640px, la técnica de romper el ancho con
+       calc(50vw) se descuadraba (no quedaba centrado) porque el cálculo
+       no era relativo a todo el viewport, sino al propio .wrap estrecho.
+       Ensanchando .wrap en sí, su margin:0 auto de siempre centra bien. */
+    @media (min-width: 861px) {
+      body:has(.aud-screen[data-screen="contacto"].active) .wrap,
+      body:has(.aud-screen[data-screen="contacto"].active) .progress-inner {
+        max-width: 1200px;
+      }
+    }
+
+    .trust-row { display: flex; justify-content: center; gap: 18px; flex-wrap: wrap; margin-bottom: 20px; }
+    .trust-item { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: bold; color: #173A5C; }
+    .autogestion-box { background: #F5F8FC; border-left: 3px solid #173A5C; border-radius: 4px; padding: 14px 16px; margin-bottom: 18px; text-align: left; }
+    .autogestion-box h2 { font-size: 14px; color: #173A5C; margin: 0 0 6px; text-align: left; }
+    .autogestion-box p { font-size: 12.5px; line-height: 1.55; margin: 0; color: #3C4A5A; }
+    .autogestion-box p + p { margin-top: 8px; }
+    .intro-comercial { display: flex; align-items: flex-start; gap: 12px; padding: 16px 18px; background: linear-gradient(135deg,#F5F8FC,#EAF1FC); border-radius: 12px; box-sizing: border-box; }
+    .intro-comercial-icon { width: 34px; height: 34px; border-radius: 10px; background: #fff; color: #1D6FE0; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 16px; box-shadow: 0 6px 14px -6px rgba(23,58,92,.25); }
+    .intro-comercial p { margin: 0; font-size: 13px; color: #3C4A5A; line-height: 1.6; }
+
+    .cta-empezar { display: block; width: 100%; background: #173A5C; color: #fff; border: none; padding: 16px; font-size: 16px; font-weight: bold; cursor: pointer; border-radius: 8px; }
+    .cta-empezar:hover { background: #0f2a44; }
+
+    /* Tarjetas de opción — grid de botones grandes, estilo comparador */
+    .opt-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 4px; }
+    .opt-grid.opt-1col { grid-template-columns: 1fr; }
+    .opt-card { position: relative; }
+    .opt-card input { position: absolute; opacity: 0; pointer-events: none; }
+    .opt-card label { display: flex; align-items: center; justify-content: center; text-align: center; gap: 8px; min-height: 64px; padding: 12px 14px; border: 2px solid #dde3ea; border-radius: 10px; font-size: 14px; font-weight: 600; color: #1A2733; cursor: pointer; transition: border-color .15s, background .15s, transform .15s; }
+    .opt-card input:checked + label { border-color: #173A5C; background: #F5F8FC; color: #173A5C; transform: scale(1.02); }
+    .opt-card label:hover { border-color: #9db3c9; }
+    .opt-card .opt-check { display: none; width: 18px; height: 18px; border-radius: 50%; border: 2px solid #173A5C; flex-shrink: 0; }
+    .opt-card input:checked + label .opt-check { display: flex; align-items: center; justify-content: center; background: #173A5C; }
+    .opt-card input:checked + label .opt-check::after { content: '✓'; color: #fff; font-size: 11px; }
+
+    /* Contador +/- para número de trabajadores / usuarios */
+    .stepper-row { display: flex; align-items: center; justify-content: center; gap: 20px; margin: 24px 0 8px; }
+    .stepper-btn { width: 46px; height: 46px; border-radius: 50%; border: 2px solid #173A5C; background: #fff; color: #173A5C; font-size: 22px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    .stepper-btn:hover { background: #F5F8FC; }
+    .stepper-num { font-size: 36px; font-weight: 800; color: #173A5C; min-width: 70px; text-align: center; }
+
+    .field { margin-bottom: 14px; text-align: left; }
+    .field label.field-lbl { display: block; font-size: 12.5px; font-weight: bold; color: #44546a; margin-bottom: 4px; }
+    .field input[type=text], .field input[type=email], .field textarea {
+      width: 100%; padding: 11px 12px; border: 1px solid #cfd8e3; font-size: 15px; font-family: inherit; border-radius: 6px;
+    }
+    .field textarea { resize: vertical; min-height: 60px; }
+
+    .check-card { position: relative; margin-bottom: 8px; }
+    .check-card input { position: absolute; opacity: 0; pointer-events: none; }
+    .check-card label { display: flex; align-items: center; gap: 10px; text-align: left; padding: 12px 14px; border: 2px solid #dde3ea; border-radius: 10px; font-size: 13.5px; font-weight: 500; color: #1A2733; cursor: pointer; transition: border-color .15s, background .15s; }
+    .check-card input:checked + label { border-color: #0F7A5C; background: #F0F7F3; color: #0F7A5C; }
+    .check-card .chk-box { width: 18px; height: 18px; border-radius: 4px; border: 2px solid #9db3c9; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+    .check-card input:checked + label .chk-box { border-color: #0F7A5C; background: #0F7A5C; }
+    .check-card input:checked + label .chk-box::after { content: '✓'; color: #fff; font-size: 11px; }
+    .servicios-nota { font-size: 11.5px; color: #8b98a8; margin: 14px 0 8px; padding-top: 10px; border-top: 1px dashed #dde3ea; text-align: left; }
+
+    .continue-btn { display: block; width: 100%; background: #173A5C; color: #fff; border: none; padding: 15px; font-size: 15px; font-weight: bold; cursor: pointer; border-radius: 8px; margin-top: 20px; }
+    .continue-btn:hover { background: #0f2a44; }
+    .continue-btn:disabled { opacity: .5; cursor: default; }
+    .submit-btn { width: 100%; background: #173A5C; color: #fff; border: none; padding: 15px; font-size: 15px; font-weight: bold; cursor: pointer; border-radius: 8px; margin-top: 8px; }
+    .submit-btn:hover { background: #0f2a44; }
+    .submit-btn:disabled { opacity: 0.6; cursor: default; }
+    .status { font-size: 12.5px; margin-top: 10px; text-align: center; min-height: 16px; }
+    .status.err { color: #b5442c; }
+    .disclaimer { text-align: center; font-size: 10.5px; color: #8b98a8; margin-top: 14px; }
+    .field-hint { font-size: 12px; color: #8b98a8; margin: -6px 0 14px; text-align: center; }
+
+    .aud-screen { display: none; }
+    .aud-screen.active { display: block; animation: audFadeInUp .38s ease both; }
+    @keyframes audFadeInUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+
+    .q-icon { width: 52px; height: 52px; border-radius: 50%; background: linear-gradient(135deg,#EAF1FC,#F5F8FC); color: #1D6FE0; display: flex; align-items: center; justify-content: center; font-size: 24px; margin: 0 auto 14px; box-shadow: 0 8px 18px -8px rgba(29,111,224,.35); }
+
+    .informe-card { padding: 0; }
+
+    /* Cabecera con la misma foto y estructura que el informe descargable
+       en PDF (ver descargarInformeAutodiagnosticoPDFSP) — así ambos se ven
+       igual, en vez de la cabecera degradada de antes. A sangre completa
+       (compensa el padding del card-panel padre con márgenes negativos). */
+    .informe-header-band { margin: -26px -22px 0; padding: 20px 22px 22px; position: relative; overflow: hidden; border-radius: 10px 10px 0 0;
+      background-color: #14283f; background-size: cover; background-position: center 65%; }
+    .informe-header-band::before { content: ''; position: absolute; inset: 0; background-color: rgba(8,22,38,.62); }
+    .informe-header-inner { position: relative; z-index: 1; }
+    .informe-header-top { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 8px; }
+    .informe-header-eyebrow { color: #fff; font-size: 10.5px; letter-spacing: 1.5px; font-weight: 700; }
+    .informe-header-pill { display: inline-block; background: #fff; color: #173A5C; font-size: 10.5px; font-weight: 800; padding: 7px 15px; border-radius: 14px; white-space: nowrap; }
+    .informe-header-titlebox { display: inline-block; max-width: 100%; background-color: rgba(10,28,48,.88); padding: 8px 16px; margin-top: 10px; }
+    .informe-header-titlebox h1 { color: #fff; font-size: 18px; margin: 0; line-height: 1.3; font-weight: 800; }
+    .informe-header-subtitle { color: #dce8f5; font-size: 11.5px; margin-top: 8px; }
+    .informe-header-client { color: #fff; font-size: 11px; margin-top: 3px; font-weight: 700; }
+
+    /* Dos columnas justo debajo de la cabecera: transición comercial a la
+       izquierda, resultado a la derecha. */
+    .informe-top-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; padding: 18px 22px 0; align-items: start; }
+    @media (max-width: 560px) { .informe-top-grid { grid-template-columns: 1fr !important; } }
+    .informe-col-resultado .informe-section-titulo { padding: 0 2px; }
+
+    .resultado-box-v2 { background: #F5F8FC; border: 1px solid #cfe1f0; border-radius: 12px; padding: 18px; display: flex; flex-direction: column; justify-content: center; }
+    .resultado-box-v2 .num { font-size: 32px; font-weight: 800; color: #173A5C; line-height: 1; margin-bottom: 8px; }
+    .resultado-box-v2 .num.low { color: #b5442c; }
+    .resultado-box-v2 .num.mid { color: #b58a2c; }
+    .resultado-box-v2 .num.high { color: #0F7A5C; }
+    .resultado-box-v2 .txt { font-size: 12px; color: #55647a; line-height: 1.5; }
+    .resultado-box-v2 .txt strong { color: #22303f; }
+
+    .informe-body-pad { padding: 20px 22px 0; }
+    .informe-section-titulo { font-size: 11px; font-weight: 800; color: #8b98a8; text-transform: uppercase; letter-spacing: .04em; margin: 4px 0 6px; }
+    .area-row { display: flex; align-items: center; gap: 12px; padding: 11px 4px; border-bottom: 1px solid #eef1f5; font-size: 13.5px; }
+    .area-row:last-of-type { border-bottom: none; }
+    .area-icon { width: 34px; height: 34px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 16px; }
+    .area-icon.ok { background: #D1FAE5; color: #0F7A5C; }
+    .area-icon.pend { background: #FEF3C7; color: #92400E; }
+    .area-label { flex: 1; font-weight: 700; color: #22303f; }
+    .badge-ok { font-size: 11px; font-weight: bold; padding: 4px 11px; border-radius: 10px; background: #D1FAE5; color: #065F46; white-space: nowrap; }
+    .badge-pend { font-size: 11px; font-weight: bold; padding: 4px 11px; border-radius: 10px; background: #FEF3C7; color: #92400E; white-space: nowrap; }
+    .alimentaria-nota { background: #FEF3C7; border-left: 3px solid #b58a2c; border-radius: 4px; padding: 10px 12px; margin-top: 14px; font-size: 12px; color: #6b5410; line-height: 1.5; }
+
+    /* Oferta recomendada (precio + servicios incluidos) y detalle de
+       precio por servicio, cada una en su propia caja con borde azul,
+       lado a lado — mismo formato que ya usa el informe en PDF. */
+    .propuesta-precios-row-pantalla { display: flex; gap: 16px; align-items: stretch; margin-top: 22px; }
+    @media (max-width: 560px) { .propuesta-precios-row-pantalla { flex-direction: column; } }
+    .paquete-box-precio, .paquete-box-detalle { flex: 1; border-radius: 12px; padding: 20px 22px; }
+    .paquete-box-precio { position: relative; background: #EFF6FF; border: 1.5px solid #1D4ED8; overflow: hidden; }
+    .paquete-box-detalle { background: #fff; border: 1px solid #cfe1f0; }
+    .paquete-ribbon { position: absolute; top: 0; left: 50%; transform: translateX(-50%); background: #1D4ED8; color: #fff; font-size: 10px; font-weight: 800; letter-spacing: .04em; padding: 6px 18px; border-radius: 0 0 8px 8px; white-space: nowrap; }
+    .paquete-box-precio .paquete-nombre { font-size: 15px; font-weight: 800; color: #173A5C; margin-top: 20px; text-align: center; }
+    .paquete-box-precio .paquete-nota { font-size: 11.5px; color: #55647a; margin: 3px 0 0; text-align: center; }
+    .paquete-box-precio .paquete-precio { font-size: 22px; font-weight: 800; color: #1D6FE0; margin: 8px 0 14px; text-align: center; }
+    .paquete-box-precio .paquete-precio small { font-size: 12px; font-weight: normal; color: #8b98a8; }
+    .paquete-servicios-lista { border-top: 1px solid #cfe1f0; padding-top: 12px; }
+    .paquete-bullet { display: flex; align-items: flex-start; gap: 8px; font-size: 12.5px; color: #3C4A5A; line-height: 1.55; padding: 3px 0; }
+    .paquete-bullet svg { color: #0F7A5C; flex-shrink: 0; margin-top: 3px; }
+    .desglose-row { display: flex; justify-content: space-between; font-size: 12.5px; color: #3C4A5A; padding: 4px 0; }
+    .desglose-row span:first-child { flex: 1 1 auto; padding-right: 14px; }
+    .desglose-row span:last-child { flex: 0 0 auto; white-space: nowrap; }
+    .desglose-nota { font-size: 11px; color: #8b98a8; font-style: italic; margin: 2px 0 8px; }
+    .desglose-separado { color: #8b98a8; text-decoration: line-through; margin-top: 8px; padding-top: 8px; border-top: 1px solid #e3e8ee; }
+    .desglose-ahorro { text-align: center; background: #D1FAE5; color: #065F46; font-weight: 700; font-size: 12.5px; border-radius: 6px; padding: 8px; margin-top: 10px; }
+    .cta-row { display: flex; gap: 10px; margin: 22px 4px 0; flex-wrap: wrap; }
+    .cta-row button { flex: 1; min-width: 200px; padding: 14px; font-size: 14px; font-weight: bold; border-radius: 10px; cursor: pointer; border: none; }
+    .cta-primary { background: linear-gradient(90deg,#1D6FE0,#173A5C); color: #fff; box-shadow: 0 16px 32px -14px rgba(29,111,224,.55); }
+    .cta-primary:hover { filter: brightness(1.06); }
+    .cta-secondary { background: #fff; color: #173A5C; border: 1.5px solid #cfd8e3 !important; }
+    .cta-secondary:hover { background: #F5F8FC; border-color: #173A5C !important; }
+    .pdf-link { display: flex; align-items: center; justify-content: center; gap: 6px; width: fit-content; margin: 16px auto 4px; padding: 10px 18px; border: 1px solid #dde3ea; border-radius: 30px; font-size: 12.5px; color: #173A5C; font-weight: 600; cursor: pointer; background: #fff; }
+    .pdf-link:hover { background: #F5F8FC; border-color: #173A5C; }
+    .done-box { background: #fff; border: 1px solid #dde3ea; border-radius: 10px; padding: 40px 24px; text-align: center; }
+    .done-box .tick { font-size: 40px; margin-bottom: 10px; }
+
+    .progress-outer.hidden { display: none; }
+
+    /* Cabecera de portada */
+    .landing-header { max-width: 1080px; margin: 0 auto; padding: 20px 24px 0; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+    .landing-header-tag { font-size: 12px; color: #55647a; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+    .landing-header-tag svg { color: #1D6FE0; font-size: 15px; }
+
+    /* Héroe — 2 columnas: texto (unificado) | foto centrada */
+    .hero-wrap { max-width: 1200px; margin: 0 auto; padding: 22px 24px 40px; display: grid; grid-template-columns: 1.05fr 1fr; gap: 46px; align-items: stretch; }
+    .hero-col-texto, .hero-col-imagen { min-width: 0; }
+    .hero-col-imagen { display: flex; }
+    .hero-col-texto { text-align: center; }
+    .hero-kicker { font-size: 11.5px; font-weight: 700; letter-spacing: 0.07em; color: #1D6FE0; text-transform: uppercase; margin-bottom: 14px; }
+    .hero-title { font-size: 32px; font-weight: 800; color: #13202E; line-height: 1.22; margin: 0 0 16px; }
+    .hero-title-accent { color: #1D6FE0; }
+    .hero-sub { font-size: 14.5px; color: #55647a; line-height: 1.6; margin-bottom: 18px; }
+    .hero-bullets { display: flex; flex-direction: column; align-items: center; gap: 9px; margin-bottom: 22px; }
+    .hb-item { display: flex; align-items: center; gap: 9px; font-size: 14px; font-weight: 600; color: #22303f; }
+    .hb-item svg { color: #1D6FE0; font-size: 17px; flex-shrink: 0; }
+    .hero-btns { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+    .hero-btns .cta-empezar { width: auto; padding: 14px 22px; border-radius: 8px; font-size: 14.5px; }
+    .hero-trust { font-size: 12px; color: #8b98a8; display: flex; justify-content: center; align-items: center; gap: 6px; }
+
+    /* Segunda sección — "cómo funciona" + las 2 cajas, a ancho completo */
+    .landing-como-funciona { padding: 56px 0 24px; border-top: 1px solid #dde3ea; }
+    .hc-titulo { font-size: 24px; font-weight: 800; color: #13202E; margin: 0 0 30px; text-align: center; }
+    .hc-steps-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 20px 24px; margin-bottom: 24px; }
+    .hc-step-col { display: flex; flex-direction: row; align-items: flex-start; text-align: left; gap: 12px; }
+    .hc-icon-wrap { position: relative; flex-shrink: 0; }
+    .hc-icon { width: 44px; height: 44px; border-radius: 50%; background: #EAF1FC; color: #1D6FE0; display: flex; align-items: center; justify-content: center; font-size: 19px; }
+    .hc-num-badge { position: absolute; top: -4px; right: -4px; width: 18px; height: 18px; border-radius: 50%; background: #1D6FE0; color: #fff; font-size: 10px; font-weight: 800; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 0 2px #fff; }
+    .hc-step-text strong { font-size: 14px; color: #13202E; display: block; margin-bottom: 3px; }
+    .hc-step-text p { font-size: 12.5px; color: #55647a; line-height: 1.5; margin: 0; }
+    .hc-boxes-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .hc-box { background: #fff; border: 1px solid #dde3ea; border-radius: 12px; padding: 24px; }
+    .hc-box-titulo { font-size: 16px; font-weight: 800; color: #13202E; margin: 0 0 16px; }
+    .hc-area-item { display: flex; align-items: center; gap: 10px; font-size: 13.5px; color: #22303f; padding: 9px 0; border-bottom: 1px solid #f1f4f7; }
+    .hc-area-item:last-child { border-bottom: none; }
+    .hc-area-item svg { color: #1D6FE0; font-size: 17px; flex-shrink: 0; }
+    .hc-audiencia-item { display: flex; gap: 14px; margin-bottom: 18px; align-items: center; }
+    .hc-audiencia-item:last-child { margin-bottom: 0; }
+    .hc-audiencia-foto { width: 52px; height: 52px; border-radius: 10px; object-fit: cover; flex-shrink: 0; }
+    .hc-audiencia-item strong { font-size: 13.5px; color: #13202E; display: block; }
+    .hc-audiencia-item p { font-size: 12.5px; color: #55647a; line-height: 1.5; margin: 4px 0 0; }
+
+    /* Foto del héroe — un único mockup fotorrealista de portátil con el
+       resultado del autodiagnóstico ya integrado en la propia pantalla
+       (checklist, 72% y botón). Al venir todo "quemado" en la imagen no
+       hace falta ninguna tarjeta superpuesta ni portátil dibujado en CSS.
+       La máscara radial difumina el borde de la foto para que se funda
+       con el fondo de la página en vez de cortar en seco. */
+    .hero-photo { position: relative; min-height: 440px; width: 100%; overflow: hidden;
+      background: transparent;
+      -webkit-mask-image: radial-gradient(ellipse 94% 92% at 52% 50%, #000 62%, rgba(0,0,0,.96) 72%, rgba(0,0,0,.58) 84%, transparent 100%);
+      mask-image: radial-gradient(ellipse 94% 92% at 52% 50%, #000 62%, rgba(0,0,0,.96) 72%, rgba(0,0,0,.58) 84%, transparent 100%); }
+    .hero-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 54% center; display: block; }
+    .hero-photo::after { content: ''; position: absolute; inset: 0; pointer-events: none;
+      background: linear-gradient(90deg, #f4f7fa 0%, rgba(244,247,250,.88) 5%, rgba(244,247,250,.28) 18%, transparent 38%); }
+    @media (max-width: 860px) {
+      .hero-photo { min-height: 360px; }
+      .hero-photo::after { background: linear-gradient(180deg, rgba(244,247,250,.18), transparent 30%); }
+    }
+
+    /* Secciones generales de la landing */
+    .landing-section { max-width: 1280px; margin: 0 auto; padding: 0 24px; }
+    .landing-h2 { font-size: 24px; font-weight: 800; color: #13202E; text-align: center; margin: 0 0 32px; }
+    .landing-h3 { font-size: 16px; font-weight: 800; color: #13202E; margin: 0 0 16px; }
+
+    .landing-stats-bar { background: #F5F8FC; padding: 40px 0; }
+    .landing-stats-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 20px; }
+    .stat-item { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 8px; font-size: 12.5px; color: #3C4A5A; font-weight: 600; }
+    .stat-item svg { font-size: 26px; color: #1D6FE0; }
+
+    .landing-cta-final { background: #13202E; padding: 36px 0; margin-top: 0; }
+    .lcf-row { display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
+    .lcf-left { display: flex; align-items: center; gap: 16px; }
+    .lcf-left > svg { font-size: 34px; color: #fff; flex-shrink: 0; }
+    .lcf-left strong { font-size: 17px; color: #fff; display: block; margin-bottom: 4px; }
+    .lcf-left p { font-size: 13px; color: #9fb0c3; margin: 0; }
+    .lcf-accent { color: #4E9BFF; font-weight: 700; }
+    .lcf-right { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+    .lcf-trust { font-size: 11.5px; color: #9fb0c3; display: flex; align-items: center; gap: 6px; }
+
+    @media (max-width: 860px) {
+      .hero-wrap { grid-template-columns: 1fr; gap: 24px; padding: 18px 16px 32px; text-align: center; }
+      .hero-title { font-size: 26px; }
+      .hero-sub, .hb-item, .hero-trust { font-size: 13px; }
+      .hero-col-imagen { max-width: 340px; margin: 0 auto; width: 100%; }
+      .hero-bullets { align-items: center; }
+      .hero-btns { justify-content: center; }
+      .hero-trust { justify-content: center; }
+      .hc-titulo { text-align: center; }
+      .hc-steps-row { grid-template-columns: 1fr; row-gap: 14px; }
+      .hc-boxes-row { grid-template-columns: 1fr; }
+      .landing-stats-row { grid-template-columns: 1fr 1fr; row-gap: 24px; }
+      .lcf-row { justify-content: center; text-align: center; }
+      .lcf-left { flex-direction: column; text-align: center; }
+      .lcf-right { align-items: center; }
+    }
+
+    @media (max-width: 420px) {
+      .opt-grid { grid-template-columns: 1fr; }
+      h1, h2.q { font-size: 19px; }
+      .hero-title { font-size: 24px; }
+      .hc-steps-row { grid-template-columns: 1fr; }
+      .landing-stats-row { grid-template-columns: 1fr; }
+    }
+
+    /* Informe final en escritorio: mismo lenguaje visual "a lo grande"
+       que la portada (ver .hero-title, .hero-sub) en vez de la escala
+       compacta que tenía antes, ahora que la pantalla ya no está encajada
+       en un card estrecho de 640px. */
+    @media (min-width: 861px) {
+      .card-panel-informe .informe-header-band { padding: 32px 40px 34px; }
+      .card-panel-informe .informe-header-eyebrow { font-size: 13px; letter-spacing: 2px; }
+      .card-panel-informe .informe-header-pill { font-size: 12.5px; padding: 9px 20px; }
+      .card-panel-informe .informe-header-titlebox { padding: 12px 22px; margin-top: 16px; }
+      .card-panel-informe .informe-header-titlebox h1 { font-size: 30px; }
+      .card-panel-informe .informe-header-subtitle { font-size: 14.5px; margin-top: 12px; }
+      .card-panel-informe .informe-header-client { font-size: 14px; margin-top: 5px; }
+
+      .card-panel-informe .informe-top-grid { padding: 28px 40px 0; gap: 22px; }
+      .card-panel-informe .intro-comercial { padding: 26px 28px; gap: 16px; }
+      .card-panel-informe .intro-comercial-icon { width: 44px; height: 44px; font-size: 20px; }
+      .card-panel-informe .intro-comercial p { font-size: 16px; line-height: 1.65; }
+      .card-panel-informe .resultado-box-v2 { padding: 28px; }
+      .card-panel-informe .resultado-box-v2 .num { font-size: 52px; margin-bottom: 12px; }
+      .card-panel-informe .resultado-box-v2 .txt { font-size: 14.5px; line-height: 1.6; }
+
+      .card-panel-informe .informe-body-pad { padding: 28px 40px 0; }
+    }
